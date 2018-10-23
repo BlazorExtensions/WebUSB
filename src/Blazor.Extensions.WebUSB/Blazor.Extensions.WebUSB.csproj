@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>Blazor Extensions WebUSB</Title>
+    <Description>HTML5 WebUSB APIs support for Microsoft ASP.NET Core Blazor.</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeP2POutput</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blazor.Extensions.WebUSB.JS\Blazor.Extensions.WebUSB.JS.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Target Name="IncludeP2POutput">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(OutputPath)Blazor.Extensions.WebUSB.JS.dll" />
+    </ItemGroup>
+  </Target>
+
+</Project>
