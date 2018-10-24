@@ -8,41 +8,35 @@ namespace Blazor.Extensions.WebUSB
 {
     internal class USB : IUSB
     {
-        private static readonly List<_USBDeviceFilter> _emptyFilters = new List<_USBDeviceFilter>();
-        // private const string REQUEST_DEVICE_METHOD = "navigator.usb.requestDevice";
-        // private const string GET_DEVICE_METHOD = "navigator.usb.getDevices";
+        private static readonly List<USBDeviceFilter> _emptyFilters = new List<USBDeviceFilter>();
         private const string REQUEST_DEVICE_METHOD = "BlazorExtensions.WebUSB.RequestDevice";
         private const string GET_DEVICE_METHOD = "BlazorExtensions.WebUSB.GetDevices";
-        // public event EventHandler OnConnect;
+        private const string ADD_ON_CONNECT_METHOD = "BlazorExtensions.WebUSB.AddOnConnectHandler";
         // public event EventHandler OnDisconnect;
 
-        public async Task<USBDevice[]> GetDevices() => (await JSRuntime.Current.InvokeAsync<_USBDevice[]>(GET_DEVICE_METHOD)).Select(d => new USBDevice(d)).ToArray();
+        public Task<USBDevice[]> GetDevices() => JSRuntime.Current.InvokeAsync<USBDevice[]>(GET_DEVICE_METHOD);
 
         public async Task<USBDevice> RequestDevice(USBDeviceRequestOptions options = null)
         {
-            var internalOptions = new _USBDeviceRequestOptions();
-            if (options != null)
+            try
             {
-                internalOptions.filters =
-                    options.Filters.Select(f =>
-                        new _USBDeviceFilter
-                        {
-                            classCode = f.ClassCode,
-                            productId = f.ProductId,
-                            protocolCode = f.ProtocolCode,
-                            serialNumber = f.SerialNumber,
-                            subClassCode = f.SubClassCode,
-                            vendorId = f.VendorId
-                        }).ToList();
+                if (options == null)
+                    options = new USBDeviceRequestOptions { Filters = _emptyFilters };
+                return await JSRuntime.Current.InvokeAsync<USBDevice>(REQUEST_DEVICE_METHOD, options);
             }
-            else
+            catch (JSException)
             {
-                internalOptions.filters = _emptyFilters;
+                return null;
             }
+        }
 
-            var device = await JSRuntime.Current.InvokeAsync<_USBDevice>(REQUEST_DEVICE_METHOD, internalOptions);
-            if (device == null) return null;
-            return new USBDevice(device);
+        public async Task<IDisposable> OnConnect(Func<USBDevice, Task> callback)
+        {
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            var callbackReference = new OnConnectCallback(Guid.NewGuid().ToString(), callback);
+            await JSRuntime.Current.InvokeAsync<object>(ADD_ON_CONNECT_METHOD, new DotNetObjectRef(callbackReference));
+            return callbackReference;
         }
     }
 }

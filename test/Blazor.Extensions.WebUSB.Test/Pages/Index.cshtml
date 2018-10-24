@@ -5,6 +5,8 @@
 
 <h1>WebUSB Test, Open up your browser devtools to see the logs!</h1>
 <input type="button" class="btn" value="List devices!" onclick=@ListDevices />
+<br>
+<br>
 <input type="text" placeholder="Vendor Id" bind=@vendorId />
 <input type="text" placeholder="Product Id" bind=@productId />
 <input type="button" class="btn" value="Request devices!" onclick=@RequestDevices />
@@ -12,6 +14,17 @@
 @functions {
     private string productId;
     private string vendorId;
+    private IDisposable onConnectHandler;
+
+    protected override async Task OnInitAsync()
+    {
+        onConnectHandler = await this.usb.OnConnect(device => 
+        {
+            logger.LogInformation("Connected: ");
+            logger.LogInformation(device);
+            return Task.CompletedTask;
+        });
+    }
 
     private async Task RequestDevices()
     {
@@ -32,8 +45,10 @@
                 }
             });
         }
-
-        logger.LogInformation(device);
+        if(device != null)
+        {
+            logger.LogInformation(device);
+        }
     }
 
     protected async Task ListDevices()

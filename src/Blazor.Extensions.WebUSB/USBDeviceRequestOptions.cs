@@ -6,9 +6,4 @@ namespace Blazor.Extensions.WebUSB
     {
         public List<USBDeviceFilter> Filters { get; set; }
     }
-
-    internal class _USBDeviceRequestOptions
-    {
-        public List<_USBDeviceFilter> filters;
-    }
 }
