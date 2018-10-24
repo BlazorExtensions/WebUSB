@@ -16,7 +16,7 @@ namespace Blazor.Extensions.WebUSB
         // public event EventHandler OnConnect;
         // public event EventHandler OnDisconnect;
 
-        public async Task<USBDevice[]> GetDevices() => (await JSRuntime.Current.InvokeAsync<_USBDevice[]>(GET_DEVICE_METHOD)).Select(d => new USBDevice(d)).ToArray();
+        public async Task<USBDevice[]> GetDevices() => (await JSRuntime.Current.InvokeAsync<USBDevice[]>(GET_DEVICE_METHOD));
 
         public async Task<USBDevice> RequestDevice(USBDeviceRequestOptions options = null)
         {
@@ -40,9 +40,18 @@ namespace Blazor.Extensions.WebUSB
                 internalOptions.filters = _emptyFilters;
             }
 
-            var device = await JSRuntime.Current.InvokeAsync<_USBDevice>(REQUEST_DEVICE_METHOD, internalOptions);
-            if (device == null) return null;
-            return new USBDevice(device);
+            USBDevice device =null;
+
+            try
+            {
+                device = await JSRuntime.Current.InvokeAsync<USBDevice>(REQUEST_DEVICE_METHOD, internalOptions);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.GetBaseException().Message);                
+            }
+            return device;
         }
+
     }
 }

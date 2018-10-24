@@ -10,35 +10,42 @@
 <input type="button" class="btn" value="Request devices!" onclick=@RequestDevices />
 
 @functions {
-    private string productId;
-    private string vendorId;
+  private string productId;
+  private string vendorId;
 
-    private async Task RequestDevices()
-    {
-        USBDevice device = null;
+  private async Task RequestDevices()
+  {
+      USBDevice device = null;
 
-        if(string.IsNullOrEmpty(this.productId) && string.IsNullOrEmpty(this.vendorId))
-        {
-            device = await this.usb.RequestDevice();
-        }
-        else
-        {
-            device = await this.usb.RequestDevice(new USBDeviceRequestOptions
-            {
-                Filters = new List<USBDeviceFilter>
+      if(string.IsNullOrEmpty(this.productId) && string.IsNullOrEmpty(this.vendorId))
+      {
+          try
+          {
+              device = await this.usb.RequestDevice();
+
+          }catch(Exception e)
+          {
+              logger.LogInformation(e.GetBaseException().Message);
+          }
+      }
+      else
+      {
+          device = await this.usb.RequestDevice(new USBDeviceRequestOptions
+          {
+              Filters = new List<USBDeviceFilter>
                 {
                     new USBDeviceFilter {VendorId = 0x079b, ProductId = 0x0028}
                     //new USBDeviceFilter { VendorId = Convert.ToUInt16(this.vendorId, 16) , ProductId = Convert.ToUInt16(this.productId, 16) }
                 }
-            });
-        }
+          });
+      }
 
-        logger.LogInformation(device);
-    }
+      logger.LogInformation(device);
+  }
 
-    protected async Task ListDevices()
-    {
-        var devices = await this.usb.GetDevices();
-        logger.LogInformation(devices);
-    }
+  protected async Task ListDevices()
+  {
+      var devices = await this.usb.GetDevices();
+      logger.LogInformation(devices);
+  }
 }
