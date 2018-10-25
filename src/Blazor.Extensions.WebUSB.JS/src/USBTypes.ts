@@ -23,8 +23,12 @@ export interface USBAlternateInterface { alternateSetting: number, interfaceClas
 export interface USBDeviceFilter { vendorId: number, productId: number, classCode: any, subClassCode: any, protocolCode: any, serialNumber: string }
 export interface USBRequestDeviceOptions { filters: USBDeviceFilter[] }
 export interface USBEndpoint { endpointNumber: number, direction: USBDirection, type: USBEndpointType, packetSize: number }
+export interface USBInTransferResult { data: number[], status: USBTransferStatus }
+export interface USBOutTransferResult { bytesWritten: number, status: USBTransferStatus }
+
 export enum USBDirection { "in", "out" }
 export enum USBEndpointType { "bulk", "interrupt", "isochronous" }
+export enum USBTransferStatus { "ok", "stall", "babble" }
 
 export function ParseUSBDevice(rawDevice: any): USBDeviceFound {
     return {

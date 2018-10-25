@@ -56,8 +56,13 @@ namespace Blazor.Extensions.WebUSB.Test
             {
                 device = await device.Open();
                 device = await device.SelectConfiguration(device.Configuration);
+                // device = await device.SelectConfiguration(1);
                 device = await device.ClaimBulkInterface();
                 this._logger.LogInformation(device);
+
+                var outResult = await device.TransferOut(2, new byte[] { 1, 2, 3 });
+                this._logger.LogInformation("Write response:");
+                this._logger.LogInformation(outResult);
             }
         }
 

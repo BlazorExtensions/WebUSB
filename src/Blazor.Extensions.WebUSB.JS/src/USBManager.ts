@@ -1,4 +1,4 @@
-import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBConfiguration, USBInterface } from "./USBTypes";
+import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBConfiguration, USBInterface, USBDirection, USBInTransferResult, USBOutTransferResult, USBTransferStatus } from "./USBTypes";
 
 type DotNetReferenceType = {
     invokeMethod<T>(methodIdentifier: string, ...args: any[]): T,
@@ -7,7 +7,10 @@ type DotNetReferenceType = {
 
 export class USBManager {
     private usb: any = (<any>navigator).usb; // The WebUSB API root object
-    private _foundDevices: any[] = []; // All devices found on the last request
+    // All devices found on the last request
+    // We keep a list of the most recent object because we can't serialize the "real" USBDevice to send back to C#
+    // TODO: Find a better way to maintain it and keep consistent with the C# side...
+    private _foundDevices: any[] = [];
 
     public GetDevices = async (): Promise<USBDeviceFound[]> => {
         let devices = await this.usb.getDevices();
@@ -77,11 +80,11 @@ export class USBManager {
         });
     }
 
-    public SelectConfiguration = (device: USBDeviceFound, config: USBConfiguration): Promise<USBDeviceFound> => {
+    public CloseDevice = (device: USBDeviceFound): Promise<USBDeviceFound> => {
         let usbDevice = this.GetUSBDevice(device);
         return new Promise<USBDeviceFound>((resolve, reject) => {
             if (!usbDevice) return reject("Device not connected");
-            usbDevice.selectConfiguration(config.configurationValue)
+            usbDevice.close()
                 .then(() => {
                     resolve(ParseUSBDevice(usbDevice));
                 })
@@ -89,14 +92,97 @@ export class USBManager {
         });
     }
 
-    public ClaimInterface = (device: USBDeviceFound, usbInterface: USBInterface): Promise<USBDeviceFound> => {
+    public ResetDevice = (device: USBDeviceFound): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+            usbDevice.reset()
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public SelectConfiguration = (device: USBDeviceFound, configurationValue: number): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+            usbDevice.selectConfiguration(configurationValue)
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public ClaimInterface = (device: USBDeviceFound, interfaceNumber: number): Promise<USBDeviceFound> => {
         let usbDevice = this.GetUSBDevice(device);
         return new Promise<USBDeviceFound>((resolve, reject) => {
             if (!usbDevice) return reject("Device not connected");
 
-            usbDevice.claimInterface(usbInterface.interfaceNumber)
+            usbDevice.claimInterface(interfaceNumber)
                 .then(() => {
                     resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public ReleaseInterface = (device: USBDeviceFound, interfaceNumber: number): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+
+            usbDevice.releaseInterface(interfaceNumber)
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public SelectAlternateInterface = (device: USBDeviceFound, interfaceNumber: number, alternateSetting: number): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+
+            usbDevice.selectAlternateInterface(interfaceNumber, alternateSetting)
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public ClearHalt = (device: USBDeviceFound, direction: USBDirection, endpointNumber: number): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+
+            usbDevice.clearHalt(direction, endpointNumber)
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public TransferIn = (device: USBDeviceFound, endpointNumber: number, length: number): Promise<USBInTransferResult> => {
+        return new Promise<USBInTransferResult>((resolve, reject) => {
+            reject("Not implemented");
+        });
+    }
+
+    public TransferOut = (device: USBDeviceFound, endpointNumber: number, data: ArrayBuffer): Promise<USBOutTransferResult> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBOutTransferResult>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+            console.log(data);
+            usbDevice.transferOut(endpointNumber, data)
+                .then(out => {
+                    console.log(out);
+                    resolve({ bytesWritten: out.bytesWritten, status: out.status });
                 })
                 .catch(err => reject(err));
         });
