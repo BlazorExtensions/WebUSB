@@ -4,9 +4,9 @@ namespace Blazor.Extensions.WebUSB
 {
     public class USBInterface
     {
-        public byte InterfaceNumber { get; set; }
-        public USBAlternateInterface Alternate { get; set; }
-        public List<USBAlternateInterface> Alternates { get; set; }
-        public bool Claimed { get; set; }
+        public byte InterfaceNumber { get; private set; }
+        public USBAlternateInterface Alternate { get; private set; }
+        public List<USBAlternateInterface> Alternates { get; private set; }
+        public bool Claimed { get; private set; }
     }
 }

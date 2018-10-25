@@ -1,4 +1,4 @@
-import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice } from "./USBTypes";
+import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBConfiguration, USBInterface } from "./USBTypes";
 
 type DotNetReferenceType = {
     invokeMethod<T>(methodIdentifier: string, ...args: any[]): T,
@@ -6,15 +6,18 @@ type DotNetReferenceType = {
 }
 
 export class USBManager {
-    private usb: any = (<any>navigator).usb;
-    private _onConnectCallbackMap: Map<string, (event) => Promise<{}>> = new Map<string, (event) => Promise<{}>>();
+    private usb: any = (<any>navigator).usb; // The WebUSB API root object
+    private _foundDevices: any[] = []; // All devices found on the last request
 
     public GetDevices = async (): Promise<USBDeviceFound[]> => {
         let devices = await this.usb.getDevices();
         let found: USBDeviceFound[] = [];
-        devices.forEach(d => {
-            found.push(ParseUSBDevice(d));
-        });
+        if (devices) {
+            devices.forEach(d => {
+                found.push(ParseUSBDevice(d));
+                this._foundDevices.push(d);
+            });
+        }
         return found;
     }
 
@@ -54,25 +57,72 @@ export class USBManager {
         return new Promise((resolve, reject) => {
             this.usb.requestDevice(reqOptions)
                 .then(d => {
-                    console.log(d);
-                    resolve(ParseUSBDevice(d));
+                    let usbDevice = ParseUSBDevice(d);
+                    this._foundDevices.push(d);
+                    resolve(usbDevice);
                 })
                 .catch(err => reject(err));
         });
     }
 
-    public AddOnConnectHandler = (callback: DotNetReferenceType) => {
-        // TODO: Fix me
-        const id = callback.invokeMethod<string>("Id");
-        let localCallback = (event) => callback.invokeMethodAsync(event.device);
-        this._onConnectCallbackMap.set(id, localCallback);
-        this.usb.addEventListener("connect", localCallback);
+    public OpenDevice = (device: USBDeviceFound): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+            usbDevice.open()
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
     }
 
-    public RemoveOnConnectHandler = (callback: DotNetReferenceType) => {
-        const id = callback.invokeMethod<string>("Id");
-        console.log("Removed " + id);
-        // TODO: Fix me
-        //Remove from callback collection
+    public SelectConfiguration = (device: USBDeviceFound, config: USBConfiguration): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+            usbDevice.selectConfiguration(config.configurationValue)
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    public ClaimInterface = (device: USBDeviceFound, usbInterface: USBInterface): Promise<USBDeviceFound> => {
+        let usbDevice = this.GetUSBDevice(device);
+        return new Promise<USBDeviceFound>((resolve, reject) => {
+            if (!usbDevice) return reject("Device not connected");
+
+            usbDevice.claimInterface(usbInterface.interfaceNumber)
+                .then(() => {
+                    resolve(ParseUSBDevice(usbDevice));
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    private GetUSBDevice = (device: USBDeviceFound): any => {
+        return this._foundDevices.find(
+            d => d.vendorId == device.vendorId &&
+                d.productId == device.productId &&
+                d.deviceClass == device.deviceClass &&
+                d.serialNumber == device.serialNumber);
+    }
+
+    private FireUSBDeviceEvent = (event: string, eventPayload: any, usb: DotNetReferenceType) => {
+        let device = ParseUSBDevice(eventPayload.device);
+        return usb.invokeMethodAsync(event, device);
+    }
+
+    public RegisterUSBEvents = (usb: DotNetReferenceType) => {
+        //TODO: Check why this event is not consistently being fired.
+        this.usb.addEventListener("connect", (event) => this.FireUSBDeviceEvent("OnConnect", event, usb));
+        this.usb.addEventListener("disconnect", (event) => this.FireUSBDeviceEvent("OnDisconnect", event, usb));
+    }
+
+    public RemoveUSBEvents = (usb: DotNetReferenceType) => {
+        this.usb.removeEventListener("connect", (event) => this.FireUSBDeviceEvent("OnConnect", event, usb));
+        this.usb.removeEventListener("disconnect", (event) => this.FireUSBDeviceEvent("OnDisconnect", event, usb));
     }
 }

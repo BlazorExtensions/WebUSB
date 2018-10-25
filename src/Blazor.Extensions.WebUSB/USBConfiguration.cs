@@ -4,8 +4,8 @@ namespace Blazor.Extensions.WebUSB
 {
     public class USBConfiguration
     {
-        public byte ConfigurationValue { get; set; }
-        public string ConfigurationName { get; set; }
-        public List<USBInterface> Interfaces { get; set; }
+        public byte ConfigurationValue { get; private set; }
+        public string ConfigurationName { get; private set; }
+        public List<USBInterface> Interfaces { get; private set; }
     }
 }

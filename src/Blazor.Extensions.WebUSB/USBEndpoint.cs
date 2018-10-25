@@ -15,9 +15,9 @@ namespace Blazor.Extensions.WebUSB
 
     public class USBEndpoint
     {
-        public byte EndpointNumber { get; set; }
-        public string Direction { get; set; }
-        public string Type { get; set; }
-        public long PacketSize { get; set; }
+        public byte EndpointNumber { get; private set; }
+        public string Direction { get; private set; }
+        public string Type { get; private set; }
+        public long PacketSize { get; private set; }
     }
 }

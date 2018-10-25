@@ -13,7 +13,7 @@ export interface USBDeviceFound {
     manufacturerName: string,
     productName: string,
     serialNumber: string,
-    configuration: USBConfiguration,
+    configuration: USBConfiguration | null,
     configurations: USBConfiguration[],
     opened: boolean
 }
@@ -42,7 +42,7 @@ export function ParseUSBDevice(rawDevice: any): USBDeviceFound {
         manufacturerName: rawDevice.manufacturerName,
         productName: rawDevice.productName,
         serialNumber: rawDevice.serialNumber,
-        configuration: ParseUSBConfiguration(rawDevice.configuration),
+        configuration: rawDevice.configuration != null ? ParseUSBConfiguration(rawDevice.configuration) : null,
         configurations: rawDevice.configurations.map(raw => ParseUSBConfiguration(raw)),
         opened: rawDevice.opened
     };
