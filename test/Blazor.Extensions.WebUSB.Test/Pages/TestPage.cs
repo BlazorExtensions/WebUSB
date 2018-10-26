@@ -13,11 +13,18 @@ namespace Blazor.Extensions.WebUSB.Test
         protected string productId;
         protected string vendorId;
 
-        protected override Task OnInitAsync()
+        private bool _initialized = false;
+
+        protected override Task OnAfterRenderAsync()
         {
-            this._usb.OnConnect += OnConnect;
-            this._usb.OnDisconnect += OnDisconnect;
-            return this._usb.Initialize();
+            if (!_initialized)
+            {
+                this._usb.OnConnect += OnConnect;
+                this._usb.OnDisconnect += OnDisconnect;
+                this._initialized = true;
+                return this._usb.Initialize();
+            }
+            return Task.CompletedTask;
         }
 
         private void OnConnect(USBDevice device)
@@ -63,6 +70,16 @@ namespace Blazor.Extensions.WebUSB.Test
                 var outResult = await device.TransferOut(2, new byte[] { 1, 2, 3 });
                 this._logger.LogInformation("Write response:");
                 this._logger.LogInformation(outResult);
+                try
+                {
+                    var inResult = await device.TransferIn(1, 3);
+                    this._logger.LogInformation("Read response:");
+                    this._logger.LogInformation(inResult);
+                }
+                catch (System.Exception exc)
+                {
+                    this._logger.LogError(exc);
+                }
             }
         }
 

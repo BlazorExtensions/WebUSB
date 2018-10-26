@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
+using Mono.WebAssembly.Interop;
 
 namespace Blazor.Extensions.WebUSB
 {

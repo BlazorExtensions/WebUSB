@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 
 namespace Blazor.Extensions.WebUSB
 {
-    internal class USB : IUSB
+    public class USB : IUSB
     {
         private static readonly List<USBDeviceFilter> _emptyFilters = new List<USBDeviceFilter>();
         private const string REGISTER_USB_METHOD = "BlazorExtensions.WebUSB.RegisterUSBEvents";

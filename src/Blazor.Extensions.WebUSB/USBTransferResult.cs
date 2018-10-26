@@ -9,12 +9,12 @@ namespace Blazor.Extensions.WebUSB
 
     public abstract class USBTransferResult
     {
-        public string Status { get; private set; }
+        public string Status { get; protected set; }
     }
 
     public class USBInTransferResult : USBTransferResult
     {
-        public byte[] Data { get; set; }
+        public byte[] Data { get; private set; }
     }
 
     public class USBOutTransferResult : USBTransferResult
