@@ -4,12 +4,12 @@
     <Authors>Blazor Extensions Contributors</Authors>
     <Product>Blazor Extensions</Product>
     <Copyright>(c) Blazor Extensions Contributors. All rights reserved.</Copyright>
-    <PackageLicenseUrl>https://github.com/BlazorExtensions/SignalR#license</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/BlazorExtensions/SignalR</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/BlazorExtensions/WebUSB#license</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/BlazorExtensions/WebUSB</PackageProjectUrl>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/38994076?s%3D128%26v%3D4</PackageIconUrl>
-    <PackageTags>Microsoft ASP.NET Core Blazor Extensions SignalR</PackageTags>
+    <PackageTags>Microsoft ASP.NET Core Blazor Extensions WebUSB</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/BlazorExtensions/SignalR</RepositoryUrl>
+    <RepositoryUrl>https://github.com/BlazorExtensions/WebUSB</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
