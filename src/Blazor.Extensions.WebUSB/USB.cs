@@ -12,7 +12,7 @@ namespace Blazor.Extensions.WebUSB
         private const string REMOVE_USB_METHOD = "BlazorExtensions.WebUSB.RemoveUSBEvents";
         private const string REQUEST_DEVICE_METHOD = "BlazorExtensions.WebUSB.RequestDevice";
         private const string GET_DEVICES_METHOD = "BlazorExtensions.WebUSB.GetDevices";
-
+        private bool _initialized = false;
         public event Action<USBDevice> OnDisconnect;
         public event Action<USBDevice> OnConnect;
 
@@ -65,6 +65,13 @@ namespace Blazor.Extensions.WebUSB
         }
 
         // TODO: Find out a more smart way to register to global connect/disconnect events from the WebUSB API regardless if there are subscribers to the events.
-        public Task Initialize() => JSRuntime.Current.InvokeAsync<object>(REGISTER_USB_METHOD, new DotNetObjectRef(this));
+        public async Task Initialize()
+        {
+            if (!this._initialized)
+            {
+                await JSRuntime.Current.InvokeAsync<object>(REGISTER_USB_METHOD, new DotNetObjectRef(this));
+                this._initialized = true;
+            }
+        }
     }
 }

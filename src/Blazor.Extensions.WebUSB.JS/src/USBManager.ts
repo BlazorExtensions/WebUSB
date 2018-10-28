@@ -1,4 +1,4 @@
-import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBConfiguration, USBInterface, USBDirection, USBInTransferResult, USBOutTransferResult, USBTransferStatus } from "./USBTypes";
+import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBConfiguration, USBInterface, USBDirection, USBInTransferResult, USBOutTransferResult, USBTransferStatus, USBControlTransferParameters } from "./USBTypes";
 
 type DotNetReferenceType = {
 	invokeMethod<T>(methodIdentifier: string, ...args: any[]): T,
@@ -171,21 +171,21 @@ export class USBManager {
 	}
 
 	public TransferIn = (device: USBDeviceFound, endpointNumber: number, length: number): Promise<USBInTransferResult> => {
-
 		let usbDevice = this.GetUSBDevice(device);
 		return new Promise<USBInTransferResult>((resolve, reject) => {
 			if (!usbDevice) return reject("Device not connected");
-			console.log("In called:");
 
 			usbDevice.transferIn(endpointNumber, length)
 				.then(out => {
-					console.log(out.data.buffer);
 					resolve({
-						data: Array.prototype.slice.call(new Uint8Array(out.data.buffer)),
+						data: Array.prototype.slice.call(new Uint8Array(out.data.buffer)), // Hack to support Uint8Array to byte[] serialization.
 						status: out.status
 					});
 				})
-				.catch(err => reject(err));
+				.catch(err => {
+					console.error(err);
+					reject(err);
+				});
 		});
 	}
 
@@ -197,9 +197,54 @@ export class USBManager {
 
 			usbDevice.transferOut(endpointNumber, buffer)
 				.then(out => {
-					resolve({ bytesWritten: out.bytesWritten, status: out.status });
+					resolve({
+						bytesWritten: out.bytesWritten,
+						status: out.status
+					});
 				})
-				.catch(err => reject(err));
+				.catch(err => {
+					console.error(err);
+					reject(err);
+				});
+		});
+	}
+
+	public ControlTransferIn = (device: USBDeviceFound, setup: USBControlTransferParameters, length: number): Promise<USBInTransferResult> => {
+		let usbDevice = this.GetUSBDevice(device);
+		return new Promise<USBInTransferResult>((resolve, reject) => {
+			if (!usbDevice) return reject("Device not connected");
+
+			usbDevice.ControlTransferIn(setup, length)
+				.then(out => {
+					resolve({
+						data: Array.prototype.slice.call(new Uint8Array(out.data.buffer)), // Hack to support Uint8Array to byte[] serialization.
+						status: out.status
+					});
+				})
+				.catch(err => {
+					console.error(err);
+					reject(err);
+				});
+		});
+	}
+
+	public ControlTransferOut = (device: USBDeviceFound, setup: USBControlTransferParameters, data: any): Promise<USBOutTransferResult> => {
+		let usbDevice = this.GetUSBDevice(device);
+		return new Promise<USBOutTransferResult>((resolve, reject) => {
+			if (!usbDevice) return reject("Device not connected");
+			const buffer = data ? Uint8Array.from(data) : undefined;
+
+			usbDevice.controlTransferOut(setup, buffer)
+				.then(out => {
+					resolve({
+						bytesWritten: out.bytesWritten,
+						status: out.status
+					});
+				})
+				.catch(err => {
+					console.error(err);
+					reject(err);
+				});
 		});
 	}
 

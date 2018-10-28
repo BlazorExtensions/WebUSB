@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.Extensions.Logging;
 using Blazor.Extensions.Logging;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Blazor.Extensions.WebUSB.Test
 {
@@ -52,13 +54,14 @@ namespace Blazor.Extensions.WebUSB.Test
                 device = await this._usb.RequestDevice(new USBDeviceRequestOptions
                 {
                     Filters = new List<USBDeviceFilter>
-                {
-                    new USBDeviceFilter {VendorId = 0x079b, ProductId = 0x0028},
-                    new USBDeviceFilter {VendorId = 0x1753, ProductId = 0xC902}
-                    // new USBDeviceFilter { VendorId = Convert.ToUInt16(this.vendorId, 16) , ProductId = Convert.ToUInt16(this.productId, 16) }
-                }
+                    {
+                        new USBDeviceFilter {VendorId = 0x079b, ProductId = 0x0028},
+                        new USBDeviceFilter {VendorId = 0x1753, ProductId = 0xC902}
+                        // new USBDeviceFilter { VendorId = Convert.ToUInt16(this.vendorId, 16) , ProductId = Convert.ToUInt16(this.productId, 16) }
+                    }
                 });
             }
+
             if (device != null)
             {
                 device = await device.Open();
@@ -70,16 +73,9 @@ namespace Blazor.Extensions.WebUSB.Test
                 var outResult = await device.TransferOut(2, new byte[] { 1, 2, 3 });
                 this._logger.LogInformation("Write response:");
                 this._logger.LogInformation(outResult);
-                try
-                {
-                    var inResult = await device.TransferIn(1, 3);
-                    this._logger.LogInformation("Read response:");
-                    this._logger.LogInformation(inResult);
-                }
-                catch (System.Exception exc)
-                {
-                    this._logger.LogError(exc);
-                }
+                var inResult = await device.TransferIn(1, 3);
+                this._logger.LogInformation("Read response:");
+                this._logger.LogInformation(inResult);
             }
         }
 

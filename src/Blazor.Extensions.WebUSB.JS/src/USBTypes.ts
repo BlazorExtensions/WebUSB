@@ -26,10 +26,13 @@ export interface USBEndpoint { endpointNumber: number, direction: USBDirection, 
 export interface USBTransferResult { status: USBTransferStatus }
 export interface USBInTransferResult extends USBTransferResult { data: any }
 export interface USBOutTransferResult extends USBTransferResult { bytesWritten: number }
+export interface USBControlTransferParameters { requestType: USBRequestType, recipient: USBRecipient, request: number, value: number, index: number }
 
 export enum USBDirection { "in", "out" }
 export enum USBEndpointType { "bulk", "interrupt", "isochronous" }
 export enum USBTransferStatus { "ok", "stall", "babble" }
+export enum USBRequestType { "standard", "class", "vendor" }
+export enum USBRecipient { "device", "interface", "endpoint", "other" }
 
 export function ParseUSBDevice(rawDevice: any): USBDeviceFound {
     return {

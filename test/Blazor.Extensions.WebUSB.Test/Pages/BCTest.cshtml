@@ -1,0 +1,8 @@
+@page "/bc"
+@inherits BCTestComponent
+@inject ILogger<Index> logger
+@inject IUSB usb
+
+<h1>BC protocol test over WebUSB. Check browser devtools to see the logs!</h1>
+<h3>Disclaimer: This is a test for a specific hardware/protocol. It is by no means reflect best practices on how to do it. Just a scrap test to make sure this component works properly on a real device. So don't try to run it unless you know what it means. :)</h3>
+<input type="button" class="btn" value="Run it!" onclick=@Run />

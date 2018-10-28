@@ -18,6 +18,8 @@ namespace Blazor.Extensions.WebUSB
         private const string SELECT_ALTERNATE_INTERFACE_METHOD = "BlazorExtensions.WebUSB.SelectAlternateInterface";
         private const string TRANSFER_OUT_METHOD = "BlazorExtensions.WebUSB.TransferOut";
         private const string TRANSFER_IN_METHOD = "BlazorExtensions.WebUSB.TransferIn";
+        private const string CONTROL_TRANSFER_OUT_METHOD = "BlazorExtensions.WebUSB.ControlTransferOut";
+        private const string CONTROL_TRANSFER_IN_METHOD = "BlazorExtensions.WebUSB.ControlTransferIn";
 
         internal static void AttachUSB(this USBDevice device, USB usb) => device.USB = usb;
         public static Task<USBDevice> Open(this USBDevice device) => JSRuntime.Current.InvokeAsync<USBDevice>(OPEN_DEVICE_METHOD, device);
@@ -52,6 +54,13 @@ namespace Blazor.Extensions.WebUSB
             var bulkInterface = device.Configuration.Interfaces.FirstOrDefault(i => i.Alternates.Any(a => a.Endpoints.Any(e => e.Type == USBEndpointType.Bulk)));
             if (bulkInterface == null) throw new InvalidOperationException("This devices doesn't have a Bulk interface");
             return device.ClaimInterface(bulkInterface.InterfaceNumber);
+        }
+
+        public static Task<USBDevice> ReleaseBulkInterface(this USBDevice device)
+        {
+            var bulkInterface = device.Configuration.Interfaces.FirstOrDefault(i => i.Alternates.Any(a => a.Endpoints.Any(e => e.Type == USBEndpointType.Bulk)));
+            if (bulkInterface == null) throw new InvalidOperationException("This devices doesn't have a Bulk interface");
+            return device.ReleaseInterface(bulkInterface.InterfaceNumber);
         }
 
         public static Task<USBDevice> ReleaseInterface(this USBDevice device, USBInterface usbInterface)
@@ -110,6 +119,16 @@ namespace Blazor.Extensions.WebUSB
         public static Task<USBOutTransferResult> TransferOut(this USBDevice device, byte endpointNumber, byte[] data)
         {
             return JSRuntime.Current.InvokeAsync<USBOutTransferResult>(TRANSFER_OUT_METHOD, device, endpointNumber, data);
+        }
+
+        public static Task<USBInTransferResult> ControlTransferIn(this USBDevice device, USBControlTransferParameters setup, long length)
+        {
+            return JSRuntime.Current.InvokeAsync<USBInTransferResult>(CONTROL_TRANSFER_IN_METHOD, device, setup, length);
+        }
+
+        public static Task<USBOutTransferResult> ControlTransferOut(this USBDevice device, USBControlTransferParameters setup, byte[] data)
+        {
+            return JSRuntime.Current.InvokeAsync<USBOutTransferResult>(CONTROL_TRANSFER_OUT_METHOD, device, setup, data);
         }
     }
 }
