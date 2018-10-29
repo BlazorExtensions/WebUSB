@@ -279,29 +279,9 @@ namespace Blazor.Extensions.WebUSB.Test
     internal static class CommandTypes
     {
         public const string Open = "OPN";
-        public const string Abort = "CAN";
         public const string Close = "CLO";
-        public const string Display = "DSP";
         public const string DisplayEx = "DEX";
-        public const string GetKey = "GKY";
-        public const string GetPIN = "GPN";
-        public const string RemoveCard = "RMC";
-        public const string Generic = "GEN";
-        public const string CheckEvent = "CKE";
-        public const string GetCard = "GCR";
-        public const string GoOnChip = "GOC";
-        public const string FinishChip = "FNC";
-        public const string ChipDirect = "CHP";
-        public const string ChangeParameter = "CNG";
         public const string GetInfo = "GIN";
-        public const string EncryptBuffer = "ENB";
-        public const string TableLoadInit = "TLI";
-        public const string TableLoadRec = "TLR";
-        public const string TableLoadEnd = "TLE";
-        public const string GetDUKPT = "GDU";
-        public const string GetTimeStamp = "GTS";
-        public const string DefineWKPAN = "DWK";
-        public const string Notification = "NTM";
     }
 
     internal static class PinPadConstants
@@ -326,97 +306,8 @@ namespace Blazor.Extensions.WebUSB.Test
     {
         Ok = 0,
         Processing = 1,
-        Notify = 2,
-        F1 = 4,
-        F2 = 5,
-        F3 = 6,
-        F4 = 7,
-        Backspace = 8,
-        /* Basic errors 10 -29 */
-        InvalidCall = 10,
-        InvalidParameter = 11,
-        Timeout = 12,
-        Cancel = 13,
         AlreadyOpen = 14,
         NotOpen = 15,
-        ExecutionError = 16,
-        InvalidModel = 17,
-        NoFunction = 18,
-        TableExpired = 20,
-        TableError = 21,
-        NoApplication = 22,
-        ErrorRFU23 = 23,
-        ErrorRFU24 = 24,
-        ErrorRFU25 = 25,
-        ErrorRFU26 = 26,
-        ErrorRFU27 = 27,
-        ErrorRFU28 = 28,
-        ErrorRFU29 = 29,
-        /* Communication/Protocol Errors 30 - 39 */
-        PortError = 30,
-        CommunicationError = 31,
-        UnknownStatus = 32,
-        ResponseError = 33,
-        CommunicationTimeout = 34,
-        ErrorRFU35 = 35,
-        ErrorRFU36 = 36,
-        ErrorRFU37 = 37,
-        ErrorRFU38 = 38,
-        ErrorRFU39 = 39,
-        /* Pinpad basic errors 40 - 49 */
-        InternalError = 40,
-        MagStripeDataError = 41,
-        PINError = 42,
-        NoCard = 43,
-        PINBusy = 44,
-        ErrorRFU45 = 45,
-        ErrorRFU46 = 46,
-        ErrorRFU47 = 47,
-        ErrorRFU48 = 48,
-        ErrorRFU49 = 49,
-        /* Errors processing cards with CHIP (SAM) 50 - 59 */
-        SAMError = 50,
-        NoSAM = 51,
-        InvalidSAM = 52,
-        ErrorRFU53 = 53,
-        ErrorRFU54 = 54,
-        ErrorRFU55 = 55,
-        ErrorRFU56 = 56,
-        ErrorRFU57 = 57,
-        ErrorRFU58 = 58,
-        ErrorRFU59 = 59,
-        /* Errors procesing contact chip cards 60 - 79 */
-        DumbCard = 60,
-        CardError = 61,
-        InvalidCard = 62,
-        CardBlocked = 63,
-        CardNotAuthorized = 64,
-        CardExpired = 65,
-        CardStructureError = 66,
-        CardInvalidated = 67,
-        CardProblem = 68,
-        CardInvalidData = 69,
-        CardApplicationNotAvailable = 70,
-        CardApplicationNotAuthorized = 71,
-        NoBalance = 72,
-        LimitExceeded = 73,
-        CardNotEffective = 74,
-        VisaCashInvalidCurrency = 75,
-        FallbackError = 76,
-        ErrorRFU77 = 77,
-        ErrorRFU78 = 78,
-        ErrorRFU79 = 79,
-        /* Errors processing contactless cards 80 - 89 */
-        MultipleCTLS = 80,
-        CommunicationErrorCTLS = 81,
-        CardInvalidatedCTLS = 82,
-        CardProblemCTLS = 83,
-        CardApplicationNotAvailableCTLS = 84,
-        CarApplicationNotAuthorizedCTLS = 85,
-        ErrorRFU86 = 86,
-        ErrorRFU87 = 87,
-        ErrorRFU88 = 88,
-        ErrorRFU89 = 89
     }
 
     internal sealed class DeviceInfo
