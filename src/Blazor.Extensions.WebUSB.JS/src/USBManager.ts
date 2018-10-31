@@ -26,7 +26,7 @@ export class USBManager {
 		return found;
 	}
 
-	public RequestDevice = (options: USBRequestDeviceOptions): Promise<USBDeviceFound> => {
+	public RequestDevice = async (options: USBRequestDeviceOptions): Promise<USBDeviceFound> => {
 		function isEmpty(obj) {
 			for (var prop in obj) {
 				if (Object.prototype.hasOwnProperty.call(obj, prop)) {
@@ -59,15 +59,10 @@ export class USBManager {
 			reqOptions = { filters: [] };
 		}
 
-		return new Promise((resolve, reject) => {
-			this.usb.requestDevice(reqOptions)
-				.then(d => {
-					let usbDevice = ParseUSBDevice(d);
-					this._foundDevices.push(d);
-					resolve(usbDevice);
-				})
-				.catch(err => reject(err));
-		});
+		let authorizedDevice = await this.usb.requestDevice(reqOptions);
+		let usbDevice = ParseUSBDevice(authorizedDevice);
+		this._foundDevices.push(authorizedDevice);
+		return usbDevice;
 	}
 
 	public OpenDevice = (device: USBDeviceFound): Promise<USBDeviceFound> => {

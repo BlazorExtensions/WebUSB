@@ -34,12 +34,18 @@ namespace Blazor.Extensions.WebUSB.Test
             return Task.CompletedTask;
         }
 
-        protected async Task Run()
+        private async Task<USBDevice> GetDevice()
         {
             USBDevice device = await this._usb.RequestDevice(new USBDeviceRequestOptions
             {
                 Filters = _filters
             });
+            return device;
+        }
+
+        protected async Task Run()
+        {
+            USBDevice device = await this.GetDevice();
 
             if (device != null)
             {
