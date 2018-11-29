@@ -1,4 +1,4 @@
-# Canvas
+# WebUSB
 HTML5 WebUSB API implementation for Microsoft Blazor
 
 [![Build status](https://dotnet-ci.visualstudio.com/DotnetCI/_apis/build/status/Blazor-Extensions-WebUSB-CI?branch=master)](https://dotnet-ci.visualstudio.com/DotnetCI/_build/latest?definitionId=18&branch=master)
