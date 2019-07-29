@@ -137,10 +137,6 @@ namespace Blazor.Extensions.WebUSB
 
         public static Task<USBInTransferResult> TransferIn(this USBDevice device, byte endpointNumber, long length)
         {
-            Console.WriteLine(device.USB != null);
-            Console.WriteLine(device.USB?.JSRuntime != null);
-            Console.WriteLine(endpointNumber);
-            Console.WriteLine(length);
             return device.USB.JSRuntime.InvokeAsync<USBInTransferResult>(TRANSFER_IN_METHOD, device, endpointNumber, length);
         }
 
