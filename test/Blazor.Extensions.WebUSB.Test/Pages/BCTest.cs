@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.Extensions.Logging;
 using Blazor.Extensions.Logging;
 using System.Collections.Generic;
@@ -7,13 +6,16 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Blazor.Extensions.WebUSB.Test
 {
-    public class BCTestComponent : BlazorComponent
+    public class BCTestComponent : ComponentBase
     {
         [Inject] private IUSB _usb { get; set; }
         [Inject] private ILogger<BCTestComponent> _logger { get; set; }
+        [Inject] private IJSRuntime _runtime { get; set; }
         private bool _initialized = false;
 
         private static readonly List<USBDeviceFilter> _filters = new List<USBDeviceFilter>
@@ -53,10 +55,8 @@ namespace Blazor.Extensions.WebUSB.Test
                 {
                     device = await device.Open();
                     device = await device.SelectConfiguration(device.Configuration);
-                    // device = await device.SelectConfiguration(1);
                     device = await device.ClaimBulkInterface();
                     this._logger.LogInformation("PinPad selected:");
-                    this._logger.LogInformation(device);
                     this._logger.LogInformation("PinPad information:");
                     var info = await this.Open(device);
                     if (info == null)
@@ -80,11 +80,16 @@ namespace Blazor.Extensions.WebUSB.Test
                     await device.Close();
                 }
             }
+            else
+            {
+                this._logger.LogWarning("Fail to get device.");
+            }
         }
 
         internal async Task<DeviceInfo> Open(USBDevice device)
         {
             var readed = await WritePacket(device, GetCommandData(CommandTypes.Open));
+            this._logger.LogInformation(readed);
             var ret = GetReturnCode(Encoding.ASCII.GetString(readed));
             if (ret != ReturnCodes.Ok && ret != ReturnCodes.AlreadyOpen)
             {
@@ -172,14 +177,16 @@ namespace Blazor.Extensions.WebUSB.Test
             this._logger.LogInformation($"{PinPadConstants.APP_TO_PINPAD} {PacketToString(outputData)}");
 
             var trxResult = await device.TransferOut(2, outputData);
+
             if (trxResult.Status != USBTransferStatus.OK)
             {
                 this._logger.LogWarning("NOT OK!!!");
                 this._logger.LogWarning(trxResult);
             }
-
+            this._logger.LogInformation(trxResult);
             int sendFailures = 0;
             var readResult = await device.TransferIn(1, 64);
+            this._logger.LogInformation(readResult);
             var read = readResult.Data[0];
 
             while (read == PinPadConstants.NAK && sendFailures < 3)

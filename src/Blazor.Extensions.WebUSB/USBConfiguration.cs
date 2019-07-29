@@ -1,11 +1,16 @@
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Blazor.Extensions.WebUSB
 {
     public class USBConfiguration
     {
-        public byte ConfigurationValue { get; internal set; }
-        public string ConfigurationName { get; private set; }
-        public List<USBInterface> Interfaces { get; private set; }
+        [JsonPropertyName("configurationValue")]
+        public byte ConfigurationValue { get; set; }
+
+        [JsonPropertyName("configurationName")]
+        public string ConfigurationName { get; set; }
+
+        [JsonPropertyName("interfaces")]
+        public USBInterface[] Interfaces { get; set; }
     }
 }

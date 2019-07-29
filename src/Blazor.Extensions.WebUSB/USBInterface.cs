@@ -1,12 +1,19 @@
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Blazor.Extensions.WebUSB
 {
     public class USBInterface
     {
-        public byte InterfaceNumber { get; private set; }
-        public USBAlternateInterface Alternate { get; private set; }
-        public List<USBAlternateInterface> Alternates { get; private set; }
-        public bool Claimed { get; private set; }
+        [JsonPropertyName("interfaceNumber")]
+        public byte InterfaceNumber { get; set; }
+
+        [JsonPropertyName("alternate")]
+        public USBAlternateInterface Alternate { get; set; }
+
+        [JsonPropertyName("alternates")]
+        public USBAlternateInterface[] Alternates { get; set; }
+
+        [JsonPropertyName("claimed")]
+        public bool Claimed { get; set; }
     }
 }

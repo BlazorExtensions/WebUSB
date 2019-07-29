@@ -71,7 +71,9 @@ export class USBManager {
 			if (!usbDevice) return reject("Device not connected");
 			usbDevice.open()
 				.then(() => {
-					resolve(ParseUSBDevice(usbDevice));
+          let parsed = ParseUSBDevice(usbDevice);
+          console.log(parsed);
+					resolve(parsed);
 				})
 				.catch(err => reject(err));
 		});
@@ -104,7 +106,8 @@ export class USBManager {
 	public SelectConfiguration = (device: USBDeviceFound, configurationValue: number): Promise<USBDeviceFound> => {
 		let usbDevice = this.GetUSBDevice(device);
 		return new Promise<USBDeviceFound>((resolve, reject) => {
-			if (!usbDevice) return reject("Device not connected");
+      if (!usbDevice) return reject("Device not connected");
+      console.log(configurationValue);
 			usbDevice.selectConfiguration(configurationValue)
 				.then(() => {
 					resolve(ParseUSBDevice(usbDevice));
@@ -231,6 +234,7 @@ export class USBManager {
 
 			usbDevice.controlTransferOut(setup, buffer)
 				.then(out => {
+          console.log(out);
 					resolve({
 						bytesWritten: out.bytesWritten,
 						status: out.status

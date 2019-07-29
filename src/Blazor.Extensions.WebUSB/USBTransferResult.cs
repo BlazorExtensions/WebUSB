@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Blazor.Extensions.WebUSB
 {
     public static class USBTransferStatus
@@ -9,16 +11,19 @@ namespace Blazor.Extensions.WebUSB
 
     public abstract class USBTransferResult
     {
-        public string Status { get; protected set; }
+        [JsonPropertyName("status")]
+        public string Status { get; set; }
     }
 
     public class USBInTransferResult : USBTransferResult
     {
-        public byte[] Data { get; private set; }
+        [JsonPropertyName("data")]
+        public byte[] Data { get; set; }
     }
 
     public class USBOutTransferResult : USBTransferResult
     {
-        public long BytesWritten { get; private set; }
+        [JsonPropertyName("bytesWritten")]
+        public long BytesWritten { get; set; }
     }
 }

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Blazor.Extensions.WebUSB
 {
     public static class USBDirection
@@ -15,9 +17,16 @@ namespace Blazor.Extensions.WebUSB
 
     public class USBEndpoint
     {
-        public byte EndpointNumber { get; private set; }
-        public string Direction { get; private set; }
-        public string Type { get; private set; }
-        public long PacketSize { get; private set; }
+        [JsonPropertyName("endpointNumber")]
+        public byte EndpointNumber { get; set; }
+
+        [JsonPropertyName("direction")]
+        public string Direction { get; set; }
+
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+
+        [JsonPropertyName("packetSize")]
+        public long PacketSize { get; set; }
     }
 }

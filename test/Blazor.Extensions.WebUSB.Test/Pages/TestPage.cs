@@ -1,14 +1,12 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.Extensions.Logging;
 using Blazor.Extensions.Logging;
 using System.Collections.Generic;
-using System;
-using System.Linq;
+using Microsoft.AspNetCore.Components;
 
 namespace Blazor.Extensions.WebUSB.Test
 {
-    public class TestPage : BlazorComponent
+    public class TestPage : ComponentBase
     {
         [Inject] private IUSB _usb { get; set; }
         [Inject] private ILogger<TestPage> _logger { get; set; }

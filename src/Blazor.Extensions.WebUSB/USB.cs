@@ -15,10 +15,16 @@ namespace Blazor.Extensions.WebUSB
         private bool _initialized = false;
         public event Action<USBDevice> OnDisconnect;
         public event Action<USBDevice> OnConnect;
+        internal IJSRuntime JSRuntime { get; private set; }
+
+        public USB(IJSRuntime jsRuntime)
+        {
+            this.JSRuntime = jsRuntime;
+        }
 
         public async Task<USBDevice[]> GetDevices()
         {
-            var devices = await JSRuntime.Current.InvokeAsync<USBDevice[]>(GET_DEVICES_METHOD);
+            var devices = await this.JSRuntime.InvokeAsync<USBDevice[]>(GET_DEVICES_METHOD);
             foreach (var device in devices)
             {
                 device.AttachUSB(this);
@@ -32,7 +38,7 @@ namespace Blazor.Extensions.WebUSB
             {
                 if (options == null)
                     options = new USBDeviceRequestOptions { Filters = _emptyFilters };
-                var device = await JSRuntime.Current.InvokeAsync<USBDevice>(REQUEST_DEVICE_METHOD, options);
+                var device = await this.JSRuntime.InvokeAsync<USBDevice>(REQUEST_DEVICE_METHOD, options);
                 device.AttachUSB(this);
                 return device;
             }
@@ -69,7 +75,7 @@ namespace Blazor.Extensions.WebUSB
         {
             if (!this._initialized)
             {
-                await JSRuntime.Current.InvokeAsync<object>(REGISTER_USB_METHOD, new DotNetObjectRef(this));
+                await this.JSRuntime.InvokeAsync<object>(REGISTER_USB_METHOD, DotNetObjectRef.Create(this));
                 this._initialized = true;
             }
         }

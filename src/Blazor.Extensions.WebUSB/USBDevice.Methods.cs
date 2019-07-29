@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
-using Mono.WebAssembly.Interop;
 
 namespace Blazor.Extensions.WebUSB
 {
@@ -21,10 +20,30 @@ namespace Blazor.Extensions.WebUSB
         private const string CONTROL_TRANSFER_OUT_METHOD = "BlazorExtensions.WebUSB.ControlTransferOut";
         private const string CONTROL_TRANSFER_IN_METHOD = "BlazorExtensions.WebUSB.ControlTransferIn";
 
-        internal static void AttachUSB(this USBDevice device, USB usb) => device.USB = usb;
-        public static Task<USBDevice> Open(this USBDevice device) => JSRuntime.Current.InvokeAsync<USBDevice>(OPEN_DEVICE_METHOD, device);
-        public static Task<USBDevice> Close(this USBDevice device) => JSRuntime.Current.InvokeAsync<USBDevice>(CLOSE_DEVICE_METHOD, device);
-        public static Task<USBDevice> Reset(this USBDevice device) => JSRuntime.Current.InvokeAsync<USBDevice>(RESET_DEVICE_METHOD, device);
+        public static async Task<USBDevice> Open(this USBDevice device)
+        {
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(OPEN_DEVICE_METHOD, device);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
+        }
+        public static async Task<USBDevice> Close(this USBDevice device)
+        {
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(CLOSE_DEVICE_METHOD, device);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
+        }
+        public static async Task<USBDevice> Reset(this USBDevice device)
+        {
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(RESET_DEVICE_METHOD, device);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
+        }
+
+        internal static void AttachUSB(this USBDevice device, USB usb)
+        {
+            device.USB = usb;
+        }
+
         public static Task<USBDevice> SelectConfiguration(this USBDevice device, USBConfiguration configuration)
         {
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
@@ -32,9 +51,11 @@ namespace Blazor.Extensions.WebUSB
             return device.SelectConfiguration(configuration.ConfigurationValue);
         }
 
-        public static Task<USBDevice> SelectConfiguration(this USBDevice device, byte configuration)
+        public static async Task<USBDevice> SelectConfiguration(this USBDevice device, byte configuration)
         {
-            return JSRuntime.Current.InvokeAsync<USBDevice>(SELECT_CONFIGURATION_METHOD, device, configuration);
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(SELECT_CONFIGURATION_METHOD, device, configuration);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
         }
 
         public static Task<USBDevice> ClaimInterface(this USBDevice device, USBInterface usbInterface)
@@ -44,9 +65,11 @@ namespace Blazor.Extensions.WebUSB
             return device.ClaimInterface(usbInterface.InterfaceNumber);
         }
 
-        public static Task<USBDevice> ClaimInterface(this USBDevice device, byte interfaceNumber)
+        public static async Task<USBDevice> ClaimInterface(this USBDevice device, byte interfaceNumber)
         {
-            return JSRuntime.Current.InvokeAsync<USBDevice>(CLAIM_INTERFACE_METHOD, device, interfaceNumber);
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(CLAIM_INTERFACE_METHOD, device, interfaceNumber);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
         }
 
         public static Task<USBDevice> ClaimBulkInterface(this USBDevice device)
@@ -70,9 +93,11 @@ namespace Blazor.Extensions.WebUSB
             return device.ReleaseInterface(usbInterface.InterfaceNumber);
         }
 
-        public static Task<USBDevice> ReleaseInterface(this USBDevice device, byte interfaceNumber)
+        public static async Task<USBDevice> ReleaseInterface(this USBDevice device, byte interfaceNumber)
         {
-            return JSRuntime.Current.InvokeAsync<USBDevice>(RELEASE_INTERFACE_METHOD, device, interfaceNumber);
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(RELEASE_INTERFACE_METHOD, device, interfaceNumber);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
         }
 
         public static Task<USBDevice> SelectAlternateInterface(this USBDevice device, USBInterface usbInterface, USBAlternateInterface usbAlternateInterface)
@@ -83,9 +108,11 @@ namespace Blazor.Extensions.WebUSB
             return device.SelectAlternateInterface(usbInterface.InterfaceNumber, usbAlternateInterface.AlternateSetting);
         }
 
-        public static Task<USBDevice> SelectAlternateInterface(this USBDevice device, byte interfaceNumber, byte alternateSetting)
+        public static async Task<USBDevice> SelectAlternateInterface(this USBDevice device, byte interfaceNumber, byte alternateSetting)
         {
-            return JSRuntime.Current.InvokeAsync<USBDevice>(SELECT_ALTERNATE_INTERFACE_METHOD, device, interfaceNumber, alternateSetting);
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(SELECT_ALTERNATE_INTERFACE_METHOD, device, interfaceNumber, alternateSetting);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
         }
 
         public static Task<USBDevice> ClearHalt(this USBDevice device, USBEndpoint endpoint)
@@ -95,9 +122,11 @@ namespace Blazor.Extensions.WebUSB
             return device.ClearHalt(endpoint.Direction, endpoint.EndpointNumber);
         }
 
-        public static Task<USBDevice> ClearHalt(this USBDevice device, string direction, byte endpointNumber)
+        public static async Task<USBDevice> ClearHalt(this USBDevice device, string direction, byte endpointNumber)
         {
-            return JSRuntime.Current.InvokeAsync<USBDevice>(CLEAR_HALT_METHOD, device, direction, endpointNumber);
+            var updatedDevice = await device.USB.JSRuntime.InvokeAsync<USBDevice>(CLEAR_HALT_METHOD, device, direction, endpointNumber);
+            updatedDevice.AttachUSB(device.USB);
+            return updatedDevice;
         }
 
         public static Task<USBInTransferResult> TransferIn(this USBDevice device, USBEndpoint endpoint, long length)
@@ -108,7 +137,11 @@ namespace Blazor.Extensions.WebUSB
 
         public static Task<USBInTransferResult> TransferIn(this USBDevice device, byte endpointNumber, long length)
         {
-            return JSRuntime.Current.InvokeAsync<USBInTransferResult>(TRANSFER_IN_METHOD, device, endpointNumber, length);
+            Console.WriteLine(device.USB != null);
+            Console.WriteLine(device.USB?.JSRuntime != null);
+            Console.WriteLine(endpointNumber);
+            Console.WriteLine(length);
+            return device.USB.JSRuntime.InvokeAsync<USBInTransferResult>(TRANSFER_IN_METHOD, device, endpointNumber, length);
         }
 
         public static Task<USBOutTransferResult> TransferOut(this USBDevice device, USBEndpoint endpoint, byte[] data)
@@ -118,17 +151,17 @@ namespace Blazor.Extensions.WebUSB
 
         public static Task<USBOutTransferResult> TransferOut(this USBDevice device, byte endpointNumber, byte[] data)
         {
-            return JSRuntime.Current.InvokeAsync<USBOutTransferResult>(TRANSFER_OUT_METHOD, device, endpointNumber, data);
+            return device.USB.JSRuntime.InvokeAsync<USBOutTransferResult>(TRANSFER_OUT_METHOD, device, endpointNumber, data);
         }
 
         public static Task<USBInTransferResult> ControlTransferIn(this USBDevice device, USBControlTransferParameters setup, long length)
         {
-            return JSRuntime.Current.InvokeAsync<USBInTransferResult>(CONTROL_TRANSFER_IN_METHOD, device, setup, length);
+            return device.USB.JSRuntime.InvokeAsync<USBInTransferResult>(CONTROL_TRANSFER_IN_METHOD, device, setup, length);
         }
 
         public static Task<USBOutTransferResult> ControlTransferOut(this USBDevice device, USBControlTransferParameters setup, byte[] data)
         {
-            return JSRuntime.Current.InvokeAsync<USBOutTransferResult>(CONTROL_TRANSFER_OUT_METHOD, device, setup, data);
+            return device.USB.JSRuntime.InvokeAsync<USBOutTransferResult>(CONTROL_TRANSFER_OUT_METHOD, device, setup, data);
         }
     }
 }
