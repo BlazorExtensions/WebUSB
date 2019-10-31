@@ -75,7 +75,7 @@ namespace Blazor.Extensions.WebUSB
         {
             if (!this._initialized)
             {
-                await this.JSRuntime.InvokeAsync<object>(REGISTER_USB_METHOD, DotNetObjectRef.Create(this));
+                await this.JSRuntime.InvokeAsync<object>(REGISTER_USB_METHOD, DotNetObjectReference.Create(this));
                 this._initialized = true;
             }
         }

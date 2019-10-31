@@ -15,7 +15,7 @@ namespace Blazor.Extensions.WebUSB.Test
 
         private bool _initialized = false;
 
-        protected override Task OnAfterRenderAsync()
+        protected override Task OnAfterRenderAsync(bool firstRender)
         {
             if (!_initialized)
             {
