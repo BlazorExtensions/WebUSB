@@ -331,3 +331,5 @@ ASALocalRun/
 
 **/dist/
 .DS_Store
+dist/
+node_modules/

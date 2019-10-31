@@ -129,33 +129,33 @@ namespace Blazor.Extensions.WebUSB
             return updatedDevice;
         }
 
-        public static Task<USBInTransferResult> TransferIn(this USBDevice device, USBEndpoint endpoint, long length)
+        public static ValueTask<USBInTransferResult> TransferIn(this USBDevice device, USBEndpoint endpoint, long length)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             return device.TransferIn(endpoint.EndpointNumber, length);
         }
 
-        public static Task<USBInTransferResult> TransferIn(this USBDevice device, byte endpointNumber, long length)
+        public static ValueTask<USBInTransferResult> TransferIn(this USBDevice device, byte endpointNumber, long length)
         {
             return device.USB.JSRuntime.InvokeAsync<USBInTransferResult>(TRANSFER_IN_METHOD, device, endpointNumber, length);
         }
 
-        public static Task<USBOutTransferResult> TransferOut(this USBDevice device, USBEndpoint endpoint, byte[] data)
+        public static ValueTask<USBOutTransferResult> TransferOut(this USBDevice device, USBEndpoint endpoint, byte[] data)
         {
             return device.TransferOut(endpoint.EndpointNumber, data);
         }
 
-        public static Task<USBOutTransferResult> TransferOut(this USBDevice device, byte endpointNumber, byte[] data)
+        public static ValueTask<USBOutTransferResult> TransferOut(this USBDevice device, byte endpointNumber, byte[] data)
         {
             return device.USB.JSRuntime.InvokeAsync<USBOutTransferResult>(TRANSFER_OUT_METHOD, device, endpointNumber, data);
         }
 
-        public static Task<USBInTransferResult> ControlTransferIn(this USBDevice device, USBControlTransferParameters setup, long length)
+        public static ValueTask<USBInTransferResult> ControlTransferIn(this USBDevice device, USBControlTransferParameters setup, long length)
         {
             return device.USB.JSRuntime.InvokeAsync<USBInTransferResult>(CONTROL_TRANSFER_IN_METHOD, device, setup, length);
         }
 
-        public static Task<USBOutTransferResult> ControlTransferOut(this USBDevice device, USBControlTransferParameters setup, byte[] data)
+        public static ValueTask<USBOutTransferResult> ControlTransferOut(this USBDevice device, USBControlTransferParameters setup, byte[] data)
         {
             return device.USB.JSRuntime.InvokeAsync<USBOutTransferResult>(CONTROL_TRANSFER_OUT_METHOD, device, setup, data);
         }

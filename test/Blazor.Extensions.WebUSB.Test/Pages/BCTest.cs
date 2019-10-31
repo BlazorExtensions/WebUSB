@@ -24,7 +24,7 @@ namespace Blazor.Extensions.WebUSB.Test
             new USBDeviceFilter {VendorId = 0x1753, ProductId = 0xC902} // Gertec
         };
 
-        protected override Task OnAfterRenderAsync()
+        protected override Task OnAfterRenderAsync(bool firstRender)
         {
             if (!_initialized)
             {
