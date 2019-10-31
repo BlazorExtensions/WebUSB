@@ -15,7 +15,7 @@
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeP2POutput</TargetsForTfmSpecificBuildOutput>
-    <PackageId>Blazor.Extensions.Logging</PackageId>
+    <PackageId>Blazor.Extensions.WebUSB</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
   </PropertyGroup>
 
