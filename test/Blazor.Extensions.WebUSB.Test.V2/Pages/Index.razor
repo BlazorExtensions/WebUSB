@@ -1,0 +1,9 @@
+@page "/"
+@inherits TestPage
+@inject HttpClient Http
+@inject ILogger<Index> logger
+@inject IUSB usb
+
+<h1>WebUSB Test, Open up your browser devtools to see the logs!</h1>
+
+<input type="button" class="btn" value="Request devices!" @onclick=RequestDevices />

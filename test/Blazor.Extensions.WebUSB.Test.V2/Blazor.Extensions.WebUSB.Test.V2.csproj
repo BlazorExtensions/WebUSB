@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Blazor.Extensions.WebUSB.JS\Blazor.Extensions.WebUSB.JS.csproj" />
+    <ProjectReference Include="..\..\src\Blazor.Extensions.WebUSB\Blazor.Extensions.WebUSB.csproj" />
+  </ItemGroup>
+
+</Project>

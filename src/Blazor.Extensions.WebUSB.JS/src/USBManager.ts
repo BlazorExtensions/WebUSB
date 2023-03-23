@@ -1,4 +1,6 @@
-import { USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBConfiguration, USBInterface, USBDirection, USBInTransferResult, USBOutTransferResult, USBTransferStatus, USBControlTransferParameters } from "./USBTypes";
+import {
+  USBDeviceFound, USBRequestDeviceOptions, ParseUSBDevice, USBDirection, USBInTransferResult, USBOutTransferResult, USBControlTransferParameters
+} from "./USBTypes";
 
 type DotNetReferenceType = {
   invokeMethod<T>(methodIdentifier: string, ...args: any[]): T,

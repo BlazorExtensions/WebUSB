@@ -19,8 +19,8 @@ namespace Blazor.Extensions.WebUSB.Test
         {
             if (!_initialized)
             {
-                this._usb.OnConnect += OnConnect;
-                this._usb.OnDisconnect += OnDisconnect;
+                this._usb.OnConnect += this.OnConnect;
+                this._usb.OnDisconnect += this.OnDisconnect;
                 this._initialized = true;
                 return this._usb.Initialize();
             }
